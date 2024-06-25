@@ -19,6 +19,7 @@ app.layout = html.Div([
     dash_table.DataTable(
         id='concordance-table',
         columns=[
+            {'name': 'Index', 'id': 'index'},
             {'name': 'Year', 'id': 'year'},
             {'name': 'Before', 'id': 'before'},
             {'name': 'Key Phrase', 'id': 'key_phrase', 'presentation': 'markdown'},
@@ -55,14 +56,15 @@ def update_table(selected_placename):
     data = []
     if selected_placename:
         years = global_concordance_dict.get(selected_placename, {})
-        # Convert year keys to integers for correct sorting, handle them as strings if conversion fails
-        sorted_years = sorted(years.keys(), key=lambda x: int(x))
+        sorted_years = sorted(years.keys(), key=lambda x: int(x))  # Sort years numerically
         for year in sorted_years:
-            concordance_lines = years[year]
-            for line in concordance_lines:
+            concordance_entries = years[year]
+            for entry in concordance_entries:
+                line = entry['line']
                 parts = line.split(selected_placename.upper(), 1)
                 data.append({
-                    'year': year,  # Keep as string for display consistency
+                    'index': entry['index'],
+                    'year': year,
                     'before': parts[0],
                     'key_phrase': f"**{selected_placename}**",
                     'after': parts[1] if len(parts) > 1 else ''
